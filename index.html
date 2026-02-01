@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidsSpot - Miejsca dla rodzin w Warszawie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --beige-lightest: #FAF8F5;
+            --beige-light: #F5F0E8;
+            --beige-medium: #E8DFD3;
+            --beige-warm: #D4C4B0;
+            --beige-dark: #B5A08A;
+            --brown-soft: #9C8B7A;
+            --brown-medium: #7A6B5A;
+            --brown-dark: #5C4F42;
+            --sage-light: #D4DDD4;
+            --sage-medium: #B8C5B5;
+            --cream: #FFFDF9;
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+            --shadow-soft: 0 2px 8px rgba(92, 79, 66, 0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background: var(--beige-lightest); color: var(--brown-dark); min-height: 100vh; line-height: 1.6; }
+        header { background: var(--cream); padding: 1.5rem 1.25rem 1rem; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--beige-medium); }
+        .header-content { max-width: 600px; margin: 0 auto; }
+        .logo { font-family: var(--font-display); font-size: 2rem; font-weight: 500; color: var(--brown-dark); display: flex; align-items: center; gap: 0.5rem; }
+        .logo-icon { width: 32px; height: 32px; background: var(--beige-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .tagline { font-size: 0.85rem; color: var(--brown-soft); margin-top: 0.25rem; font-style: italic; font-family: var(--font-display); }
+        
+        .filters-row { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.75rem 1.25rem; max-width: 600px; margin: 0 auto; }
+        .filter-btn { background: var(--cream); border: 1.5px solid var(--beige-medium); padding: 0.5rem 0.9rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.8rem; color: var(--brown-medium); cursor: pointer; white-space: nowrap; transition: all 0.25s ease; }
+        .filter-btn:hover { border-color: var(--beige-warm); background: var(--beige-light); }
+        .filter-btn.active { background: var(--brown-dark); border-color: var(--brown-dark); color: var(--cream); }
+        .filter-btn.local-btn { background: var(--sage-light); border-color: var(--sage-medium); color: var(--brown-dark); }
+        .filter-btn.local-btn:hover { background: var(--sage-medium); }
+        .filter-btn.local-btn.active { background: var(--brown-dark); border-color: var(--brown-dark); color: var(--cream); }
+        .filter-btn.location-btn { background: #E8F4F8; border-color: #B8D4E3; color: #2D5F7C; }
+        .filter-btn.location-btn:hover { background: #D4E8F0; }
+        .filter-btn.location-btn.active { background: #2D5F7C; border-color: #2D5F7C; color: white; }
+        .filter-btn.location-btn.loading { opacity: 0.7; cursor: wait; }
+        
+        .district-filter { padding: 0.5rem 1.25rem 1rem; max-width: 600px; margin: 0 auto; }
+        .district-select { width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--beige-medium); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.85rem; color: var(--brown-dark); background: var(--cream); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237A6B5A' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+        .district-select:focus { outline: none; border-color: var(--beige-warm); }
+        
+        main { max-width: 600px; margin: 0 auto; padding: 0 1.25rem 6rem; }
+        .section-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; color: var(--brown-dark); margin: 1.25rem 0 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .section-title .count { font-family: var(--font-body); font-size: 0.75rem; background: var(--beige-medium); padding: 0.25rem 0.6rem; border-radius: 100px; color: var(--brown-medium); }
+        .places-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        
+        .place-card { background: var(--cream); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-soft); border: 1px solid var(--beige-light); position: relative; overflow: hidden; animation: fadeInUp 0.4s ease backwards; }
+        .place-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--beige-warm); }
+        .place-card.playroom::before { background: var(--sage-medium); }
+        .place-card.visited { opacity: 0.75; }
+        .place-card.visited::after { content: '✓'; position: absolute; top: 1rem; right: 1rem; background: var(--sage-light); color: var(--brown-medium); font-size: 0.75rem; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        
+        .place-header { margin-bottom: 0.4rem; padding-right: 2rem; }
+        .place-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--brown-dark); line-height: 1.3; }
+        .place-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.25rem; }
+        .place-type { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brown-soft); background: var(--beige-light); padding: 0.15rem 0.4rem; border-radius: 4px; }
+        .place-type.playroom { background: var(--sage-light); color: var(--brown-medium); }
+        .place-district { font-size: 0.75rem; color: var(--brown-soft); }
+        .place-distance { font-size: 0.7rem; color: #2D5F7C; background: #E8F4F8; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 500; }
+        
+        .place-address { font-size: 0.8rem; color: var(--brown-soft); margin-bottom: 0.4rem; }
+        .place-hours { font-size: 0.75rem; color: var(--brown-soft); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem; }
+        .place-hours svg { width: 12px; height: 12px; opacity: 0.6; }
+        
+        .place-note { background: var(--beige-light); border-radius: var(--radius-sm); padding: 0.6rem; margin-top: 0.5rem; font-size: 0.8rem; color: var(--brown-medium); font-style: italic; }
+        .place-note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem; }
+        .place-note-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brown-soft); font-style: normal; }
+        .delete-note-btn { background: none; border: none; color: var(--brown-soft); cursor: pointer; font-size: 0.7rem; padding: 0.1rem; }
+        
+        .place-actions { display: flex; gap: 0.4rem; margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid var(--beige-light); flex-wrap: wrap; }
+        .action-btn { flex: 1; min-width: 60px; padding: 0.5rem 0.4rem; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
+        .action-btn.primary { background: var(--brown-dark); color: var(--cream); border: none; }
+        .action-btn.primary:hover { background: var(--brown-medium); }
+        .action-btn.secondary { background: transparent; border: 1.5px solid var(--beige-warm); color: var(--brown-medium); }
+        .action-btn.secondary:hover { background: var(--beige-light); }
+        .action-btn.secondary.visited { background: var(--sage-light); border-color: var(--sage-medium); }
+        
+        .stats-bar { background: var(--beige-light); padding: 0.75rem 1.25rem; margin: 0 -1.25rem 0.75rem; display: flex; justify-content: center; gap: 2rem; }
+        .stat { text-align: center; }
+        .stat-value { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--brown-dark); }
+        .stat-label { font-size: 0.65rem; color: var(--brown-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--brown-soft); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(92, 79, 66, 0.4); z-index: 200; align-items: flex-end; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--cream); width: 100%; max-width: 600px; border-radius: var(--radius) var(--radius) 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; color: var(--brown-dark); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--brown-soft); cursor: pointer; padding: 0.5rem; line-height: 1; }
+        .modal-place-name { font-size: 0.9rem; color: var(--brown-soft); margin-bottom: 1rem; }
+        .note-textarea { width: 100%; min-height: 100px; padding: 0.75rem; border: 1.5px solid var(--beige-medium); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.9rem; color: var(--brown-dark); background: var(--beige-lightest); resize: vertical; }
+        .note-textarea:focus { outline: none; border-color: var(--beige-warm); }
+        .modal-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .modal-btn { flex: 1; padding: 0.75rem; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+        .modal-btn.save { background: var(--brown-dark); color: var(--cream); border: none; }
+        .modal-btn.cancel { background: transparent; border: 1.5px solid var(--beige-warm); color: var(--brown-medium); }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .places-list .place-card:nth-child(1) { animation-delay: 0.02s; }
+        .places-list .place-card:nth-child(2) { animation-delay: 0.04s; }
+        .places-list .place-card:nth-child(3) { animation-delay: 0.06s; }
+        .places-list .place-card:nth-child(4) { animation-delay: 0.08s; }
+        .places-list .place-card:nth-child(5) { animation-delay: 0.1s; }
+        
+        @media (max-width: 400px) {
+            .logo { font-size: 1.75rem; }
+            .place-name { font-size: 1rem; }
+            .action-btn { padding: 0.45rem 0.35rem; font-size: 0.65rem; min-width: 55px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo"><span class="logo-icon">🧸</span> KidsSpot</div>
+            <p class="tagline">Odkrywaj miejsca przyjazne dzieciom w Warszawie</p>
+        </div>
+    </header>
+    
+    <nav class="filters-row">
+        <button class="filter-btn active" data-filter="all">Wszystkie</button>
+        <button class="filter-btn" data-filter="playroom">Sale zabaw</button>
+        <button class="filter-btn" data-filter="restaurant">Restauracje</button>
+        <button class="filter-btn" data-filter="visited">Odwiedzone ✓</button>
+        <button class="filter-btn local-btn" data-filter="local">🏠 Gocławek i okolice</button>
+        <button class="filter-btn location-btn" id="location-btn">📍 Najbliżej mnie</button>
+    </nav>
+    
+    <div class="district-filter">
+        <select class="district-select" id="district-select">
+            <option value="all">📍 Wszystkie dzielnice</option>
+            <option value="Białołęka">Białołęka</option>
+            <option value="Gocław">Gocław</option>
+            <option value="Grochów">Grochów</option>
+            <option value="Mokotów">Mokotów</option>
+            <option value="Ochota">Ochota</option>
+            <option value="Praga Południe">Praga Południe</option>
+            <option value="Praga Północ">Praga Północ</option>
+            <option value="Saska Kępa">Saska Kępa</option>
+            <option value="Śródmieście">Śródmieście</option>
+            <option value="Targówek">Targówek</option>
+            <option value="Ursynów">Ursynów</option>
+            <option value="Wawer">Wawer</option>
+            <option value="Wesoła">Wesoła</option>
+            <option value="Wilanów">Wilanów</option>
+            <option value="Wola">Wola</option>
+            <option value="Ząbki">Ząbki</option>
+            <option value="Żoliborz">Żoliborz</option>
+        </select>
+    </div>
+    
+    <main>
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value" id="total-places">0</div><div class="stat-label">miejsc</div></div>
+            <div class="stat"><div class="stat-value" id="visited-count">0</div><div class="stat-label">odwiedzonych</div></div>
+            <div class="stat"><div class="stat-value" id="to-visit">0</div><div class="stat-label">do odkrycia</div></div>
+        </div>
+        <div id="places-container"></div>
+    </main>
+    
+    <div class="modal-overlay" id="note-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">📝 Notatka</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <p class="modal-place-name" id="modal-place-name"></p>
+            <textarea class="note-textarea" id="note-textarea" placeholder="Np. 'Pyszne ciasto! Warto rezerwować w weekendy.'"></textarea>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="modal-cancel">Anuluj</button>
+                <button class="modal-btn save" id="modal-save">Zapisz</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const places = [
+            // PRAGA POŁUDNIE - Sale zabaw
+            { id: 1, name: "Sala Zabaw Mango", address: "ul. Mińska 69", type: "playroom", district: "Praga Południe", phone: "605 494 224", hours: "Wt-Śr 15-19, Czw-Pt 10-19, Sb-Nd 10-16", mapUrl: "https://maps.google.com/?q=Sala+Zabaw+Mango+Mińska+69+Warszawa", lat: 52.2485, lng: 21.0567 },
+            { id: 2, name: "Tęczowa Sowa", address: "ul. Podskarbińska 34", type: "playroom", district: "Grochów", phone: "22 253 15 35", hours: "Pn-Pt 9-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Tęczowa+Sowa+Podskarbińska+Warszawa", lat: 52.2398, lng: 21.0821 },
+            { id: 3, name: "Madagaskar", address: "ul. Grochowska 170A", type: "playroom", district: "Grochów", phone: "22 465 82 64", hours: "Codziennie 10:00-20:00", mapUrl: "https://maps.google.com/?q=Sala+Zabaw+Madagaskar+Grochowska+Warszawa", lat: 52.2456, lng: 21.0712 },
+            { id: 4, name: "Kawa i Zabawa", address: "ul. Grochowska 207", type: "playroom", district: "Grochów", phone: "501 234 567", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Kawa+i+Zabawa+Grochowska+Warszawa", lat: 52.2445, lng: 21.0756 },
+            // GOCŁAW
+            { id: 5, name: "Jungle Academy", address: "ul. Wał Miedzeszyński 646", type: "playroom", district: "Gocław", phone: "22 428 18 28", hours: "Codziennie 10:00-20:00", mapUrl: "https://maps.google.com/?q=Jungle+Academy+Wał+Miedzeszyński+Warszawa", lat: 52.2312, lng: 21.0891 },
+            { id: 6, name: "Labibu", address: "CH Promenada, ul. Ostrobramska 75C", type: "playroom", district: "Gocław", phone: "22 611 70 89", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Labibu+Promenada+Warszawa", lat: 52.2389, lng: 21.0845 },
+            { id: 7, name: "Fiku-Miku", address: "CH Tesco, ul. Fieldorfa 41", type: "playroom", district: "Gocław", phone: "22 813 92 31", hours: "Codziennie 11:00-20:00", mapUrl: "https://maps.google.com/?q=Fiku+Miku+Fieldorfa+Warszawa", lat: 52.2334, lng: 21.0798 },
+            // SASKA KĘPA
+            { id: 8, name: "FikuMiku Cafe", address: "ul. Zwycięzców 32", type: "playroom", district: "Saska Kępa", phone: "692 448 112", hours: "Pn-Pt 10-20, Sb-Nd 11-20", mapUrl: "https://maps.google.com/?q=FikuMiku+Cafe+Zwycięzców+Warszawa", lat: 52.2401, lng: 21.0534 },
+            // WAWER
+            { id: 9, name: "Fikołki Ferio Wawer", address: "Ferio Wawer, ul. Szpotańskiego 4", type: "playroom", district: "Wawer", phone: "22 100 41 00", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Fikołki+Ferio+Wawer+Warszawa", lat: 52.2156, lng: 21.1523 },
+            // ZĄBKI
+            { id: 10, name: "Nad Przystanią", address: "ul. Szpitalna 57", type: "playroom", district: "Ząbki", phone: "510 300 400", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Nad+Przystanią+Szpitalna+Ząbki", lat: 52.2912, lng: 21.1134 },
+            { id: 11, name: "Hopsa", address: "ul. Powstańców 35", type: "playroom", district: "Ząbki", phone: "507 471 166", hours: "Pn-Pt 14-20, Sb-Nd 10-20", mapUrl: "https://maps.google.com/?q=Hopsa+Ząbki", lat: 52.2867, lng: 21.1089 },
+            // WESOŁA
+            { id: 12, name: "Eduflow Kids", address: "ul. Główna 47, Sulejówek", type: "playroom", district: "Wesoła", phone: "510 200 408", hours: "Pn-Pt 15-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Eduflow+Kids+Sulejówek", lat: 52.2534, lng: 21.2145 },
+            // TARGÓWEK
+            { id: 13, name: "JU-HU", address: "ul. Głębocka 3 lok. 19", type: "playroom", district: "Targówek", phone: "536 300 320", hours: "Wg Google - sprawdź", mapUrl: "https://maps.google.com/?q=JUHU+Sala+Zabaw+Głębocka+Warszawa", lat: 52.2912, lng: 21.0423 },
+            // BIAŁOŁĘKA  
+            { id: 14, name: "Ekofrajda", address: "ul. Porajów 2", type: "playroom", district: "Białołęka", phone: "22 811 22 33", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Ekofrajda+Porajów+Warszawa", lat: 52.3234, lng: 20.9823 },
+            // INNE DZIELNICE - Sale zabaw
+            { id: 15, name: "Smart Kids Planet", address: "Fabryka Norblina, ul. Żelazna 51/53", type: "playroom", district: "Wola", phone: "727 770 880", hours: "Codziennie 9:00-20:00", mapUrl: "https://maps.google.com/?q=Smart+Kids+Planet+Fabryka+Norblina+Warszawa", lat: 52.2312, lng: 20.9934 },
+            { id: 16, name: "LuMo", address: "ul. Postępu 4", type: "playroom", district: "Mokotów", phone: "572 922 211", hours: "Codziennie 9:00-20:00", mapUrl: "https://maps.google.com/?q=LuMo+Plac+Zabaw+Postępu+Warszawa", lat: 52.1823, lng: 20.9978 },
+            { id: 17, name: "Inca Play", address: "Blue City, Al. Jerozolimskie 179", type: "playroom", district: "Ochota", phone: "22 310 30 40", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Inca+Play+Blue+City+Warszawa", lat: 52.2123, lng: 20.9534 },
+            { id: 18, name: "Kółko i Krzyżyk", address: "ul. Rydygiera 17", type: "playroom", district: "Żoliborz", phone: "22 839 00 11", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Kółko+Krzyżyk+Rydygiera+Warszawa", lat: 52.2712, lng: 20.9823 },
+            { id: 19, name: "Anse Kabanse", address: "ul. Sowińskiego 25", type: "playroom", district: "Wola", phone: "22 632 44 55", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Anse+Kabanse+Sowińskiego+Warszawa", lat: 52.2389, lng: 20.9756 },
+            
+            // RESTAURACJE - Praga Południe / Gocław
+            { id: 30, name: "Papito Cocina Mexicana", address: "ul. gen. Skalskiego 1", type: "restaurant", district: "Gocław", phone: "733 408 385", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=Papito+Cocina+Mexicana+Skalskiego+Warszawa", lat: 52.2356, lng: 21.0712 },
+            { id: 31, name: "Hopsaska", address: "ul. Bora-Komorowskiego 56A", type: "restaurant", district: "Praga Południe", phone: "22 271 33 55", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Hopsaska+Bora+Komorowskiego+Warszawa", lat: 52.2267, lng: 21.0623 },
+            { id: 32, name: "Zdrowe Ciacho", address: "ul. Nowaka-Jeziorańskiego 44", type: "restaurant", district: "Gocław", phone: "512 222 333", hours: "Pn-Pt 11-20, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Zdrowe+Ciacho+Gocław+Warszawa", lat: 52.2378, lng: 21.0867 },
+            // SASKA KĘPA
+            { id: 33, name: "Ruza Roza", address: "ul. Walecznych 66", type: "restaurant", district: "Saska Kępa", phone: "22 100 06 06", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=Ruza+Roza+Walecznych+Warszawa", lat: 52.2412, lng: 21.0489 },
+            { id: 34, name: "Bistro Bibuła", address: "ul. Zwycięzców 47", type: "restaurant", district: "Saska Kępa", phone: "22 617 13 38", hours: "Pn-Pt 9-21, Sb-Nd 10-21", mapUrl: "https://maps.google.com/?q=Bistro+Bibuła+Zwycięzców+Warszawa", lat: 52.2398, lng: 21.0523 },
+            { id: 35, name: "Bella Napoli", address: "ul. Francuska 18", type: "restaurant", district: "Saska Kępa", phone: "22 617 35 00", hours: "Codziennie 12:00-23:00", mapUrl: "https://maps.google.com/?q=Bella+Napoli+Francuska+Warszawa", lat: 52.2423, lng: 21.0512 },
+            { id: 36, name: "Niebieskie Migdały", address: "ul. Francuska 35", type: "restaurant", district: "Saska Kępa", phone: "22 617 63 15", hours: "Codziennie 9:00-21:00", mapUrl: "https://maps.google.com/?q=Niebieskie+Migdały+Francuska+Warszawa", lat: 52.2434, lng: 21.0534 },
+            { id: 37, name: "Bułkę przez Bibułkę", address: "ul. Floriańska 3", type: "restaurant", district: "Saska Kępa", phone: "22 619 60 71", hours: "Pn-Pt 8-17, Sb 9-15", mapUrl: "https://maps.google.com/?q=Bułkę+przez+Bibułkę+Floriańska+Warszawa", lat: 52.2445, lng: 21.0545 },
+            // WAWER
+            { id: 38, name: "Kura Domowa", address: "ul. Zwoleńska 81", type: "restaurant", district: "Wawer", phone: "22 611 00 04", hours: "Codziennie 10:00-22:00", mapUrl: "https://maps.google.com/?q=Kura+Domowa+Zwoleńska+Warszawa", lat: 52.2078, lng: 21.1234 },
+            // PRAGA PÓŁNOC
+            { id: 39, name: "Młyn na Okrzei", address: "ul. Okrzei 23", type: "restaurant", district: "Praga Północ", phone: "22 619 20 30", hours: "Pn-Nd 12:00-22:00", mapUrl: "https://maps.google.com/?q=Młyn+Okrzei+Warszawa", lat: 52.2534, lng: 21.0412 },
+            // TARGÓWEK
+            { id: 40, name: "U Babci", address: "ul. Codzienna 8", type: "restaurant", district: "Targówek", phone: "22 678 90 12", hours: "Pn-Nd 11:00-21:00", mapUrl: "https://maps.google.com/?q=U+Babci+Codzienna+Warszawa", lat: 52.2823, lng: 21.0534 },
+            // INNE DZIELNICE
+            { id: 41, name: "Der Elefant", address: "Plac Bankowy 1", type: "restaurant", district: "Śródmieście", phone: "22 827 73 30", hours: "Codziennie 12:00-23:00", mapUrl: "https://maps.google.com/?q=Der+Elefant+Plac+Bankowy+Warszawa", lat: 52.2445, lng: 21.0023 },
+            { id: 42, name: "Otto Pompieri", address: "Plac Bankowy 1", type: "restaurant", district: "Śródmieście", phone: "22 370 24 20", hours: "Nd-Czw 12-22, Pt-Sb 12-23", mapUrl: "https://maps.google.com/?q=Otto+Pompieri+Plac+Bankowy+Warszawa", lat: 52.2445, lng: 21.0023 },
+            { id: 43, name: "Kafejka Sto Pociech", address: "ul. Freta 20/24A", type: "restaurant", district: "Śródmieście", phone: "22 635 54 20", hours: "Wt-Nd 11:00-18:00", mapUrl: "https://maps.google.com/?q=Kafejka+Sto+Pociech+Freta+Warszawa", lat: 52.2512, lng: 21.0089 },
+            { id: 44, name: "Nabo Cafe", address: "ul. Zakręt 8", type: "restaurant", district: "Mokotów", phone: "22 842 02 56", hours: "Codziennie 9:00-21:00", mapUrl: "https://maps.google.com/?q=Nabo+Cafe+Zakręt+Warszawa", lat: 52.1934, lng: 21.0423 },
+            { id: 45, name: "Polana", address: "ul. Klimczaka 5 lok. 81", type: "restaurant", district: "Wilanów", phone: "22 402 20 24", hours: "Pn-Pt 9-20, Sb-Nd 10-20", mapUrl: "https://maps.google.com/?q=Polana+Klimczaka+Wilanów+Warszawa", lat: 52.1645, lng: 21.0534 },
+            { id: 46, name: "Kuźnia Kulturalna", address: "ul. Kostki Potockiego 24", type: "restaurant", district: "Wilanów", phone: "22 885 66 77", hours: "Pn-Nd 10:00-21:00", mapUrl: "https://maps.google.com/?q=Kuźnia+Kulturalna+Wilanów+Warszawa", lat: 52.1589, lng: 21.0789 },
+            { id: 47, name: "Słowo Daję", address: "Pasaż Ursynowski 9", type: "restaurant", district: "Ursynów", phone: "22 123 45 67", hours: "Pn-Sb 10-20, Nd 11-18", mapUrl: "https://maps.google.com/?q=Słowo+Daję+Ursynów+Warszawa", lat: 52.1534, lng: 21.0312 },
+            { id: 48, name: "American House", address: "ul. Baletowa 3", type: "restaurant", district: "Ursynów", phone: "22 648 88 88", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=American+House+Baletowa+Warszawa", lat: 52.1478, lng: 21.0245 },
+        ];
+        
+        let visitedPlaces = JSON.parse(localStorage.getItem('kidsspot_visited') || '[]');
+        let placeNotes = JSON.parse(localStorage.getItem('kidsspot_notes') || '{}');
+        let currentFilter = 'all';
+        let currentDistrict = 'all';
+        let currentNotePlace = null;
+        let userLocation = null;
+        let sortByDistance = false;
+        
+        const LOCAL_DISTRICTS = ['Grochów', 'Praga Południe', 'Gocław', 'Saska Kępa', 'Wawer'];
+        
+        const container = document.getElementById('places-container');
+        const locationBtn = document.getElementById('location-btn');
+        
+        // Haversine formula for distance calculation
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        function getDistanceText(km) {
+            if (km < 1) return Math.round(km * 1000) + ' m';
+            return km.toFixed(1) + ' km';
+        }
+        
+        function requestLocation() {
+            if (!navigator.geolocation) {
+                alert('Twoja przeglądarka nie obsługuje geolokalizacji');
+                return;
+            }
+            
+            locationBtn.classList.add('loading');
+            locationBtn.textContent = '📍 Szukam...';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    sortByDistance = true;
+                    locationBtn.classList.remove('loading');
+                    locationBtn.classList.add('active');
+                    locationBtn.textContent = '📍 Najbliżej mnie';
+                    
+                    // Reset other filters visual state but keep type filter
+                    filterBtns.forEach(b => {
+                        if (b !== locationBtn && !['playroom', 'restaurant', 'visited'].includes(b.dataset.filter)) {
+                            b.classList.remove('active');
+                        }
+                    });
+                    if (currentFilter === 'local') {
+                        currentFilter = 'all';
+                        filterBtns[0].classList.add('active');
+                    }
+                    
+                    renderPlaces();
+                },
+                (error) => {
+                    locationBtn.classList.remove('loading');
+                    locationBtn.textContent = '📍 Najbliżej mnie';
+                    let msg = 'Nie udało się pobrać lokalizacji';
+                    if (error.code === 1) msg = 'Odmówiono dostępu do lokalizacji';
+                    alert(msg);
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const districtSelect = document.getElementById('district-select');
+        const noteModal = document.getElementById('note-modal');
+        const noteTextarea = document.getElementById('note-textarea');
+        const modalPlaceName = document.getElementById('modal-place-name');
+        
+        function getFilteredPlaces() {
+            let filtered = places;
+            if (currentFilter === 'playroom') filtered = filtered.filter(p => p.type === 'playroom');
+            else if (currentFilter === 'restaurant') filtered = filtered.filter(p => p.type === 'restaurant');
+            else if (currentFilter === 'visited') filtered = filtered.filter(p => visitedPlaces.includes(p.id));
+            else if (currentFilter === 'local') filtered = filtered.filter(p => LOCAL_DISTRICTS.includes(p.district));
+            if (currentDistrict !== 'all') filtered = filtered.filter(p => p.district === currentDistrict);
+            return filtered;
+        }
+        
+        function renderPlaces() {
+            let filtered = getFilteredPlaces();
+            
+            // Sort by distance if location is available
+            if (sortByDistance && userLocation) {
+                filtered = filtered.map(p => ({
+                    ...p,
+                    distance: calculateDistance(userLocation.lat, userLocation.lng, p.lat, p.lng)
+                })).sort((a, b) => a.distance - b.distance);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Brak miejsc w tej kategorii</p></div>`;
+                return;
+            }
+            
+            let html = '';
+            if (sortByDistance && userLocation) {
+                // Show all places sorted by distance (no separation by type)
+                html += `<h2 class="section-title">📍 Najbliżej Ciebie <span class="count">${filtered.length}</span></h2><div class="places-list">${filtered.map(renderPlaceCard).join('')}</div>`;
+            } else {
+                const playrooms = filtered.filter(p => p.type === 'playroom');
+                const restaurants = filtered.filter(p => p.type === 'restaurant');
+                if (playrooms.length > 0) html += `<h2 class="section-title">🎪 Sale zabaw <span class="count">${playrooms.length}</span></h2><div class="places-list">${playrooms.map(renderPlaceCard).join('')}</div>`;
+                if (restaurants.length > 0) html += `<h2 class="section-title">🍽️ Restauracje <span class="count">${restaurants.length}</span></h2><div class="places-list">${restaurants.map(renderPlaceCard).join('')}</div>`;
+            }
+            container.innerHTML = html;
+            
+            document.querySelectorAll('.visit-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); toggleVisited(parseInt(btn.dataset.id)); }));
+            document.querySelectorAll('.map-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); window.open(btn.dataset.url, '_blank'); }));
+            document.querySelectorAll('.call-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); window.location.href = `tel:${btn.dataset.phone}`; }));
+            document.querySelectorAll('.note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); openNoteModal(parseInt(btn.dataset.id)); }));
+            document.querySelectorAll('.delete-note-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); deleteNote(parseInt(btn.dataset.id)); }));
+        }
+        
+        function renderPlaceCard(place) {
+            const isVisited = visitedPlaces.includes(place.id);
+            const note = placeNotes[place.id];
+            const typeLabel = place.type === 'playroom' ? 'Sala zabaw' : 'Restauracja';
+            const distanceHtml = place.distance !== undefined ? `<span class="place-distance">${getDistanceText(place.distance)}</span>` : '';
+            return `
+                <article class="place-card ${place.type} ${isVisited ? 'visited' : ''}">
+                    <div class="place-header">
+                        <h3 class="place-name">${place.name}</h3>
+                        <div class="place-meta">
+                            <span class="place-type ${place.type}">${typeLabel}</span>
+                            <span class="place-district">📍 ${place.district}</span>
+                            ${distanceHtml}
+                        </div>
+                    </div>
+                    <p class="place-address">${place.address}</p>
+                    <p class="place-hours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${place.hours}</p>
+                    ${note ? `<div class="place-note"><div class="place-note-header"><span class="place-note-label">Notatka</span><button class="delete-note-btn" data-id="${place.id}">✕</button></div>${note}</div>` : ''}
+                    <div class="place-actions">
+                        <button class="action-btn secondary visit-btn ${isVisited ? 'visited' : ''}" data-id="${place.id}">${isVisited ? '✓' : '○'}</button>
+                        <button class="action-btn secondary note-btn" data-id="${place.id}">📝</button>
+                        <button class="action-btn secondary call-btn" data-phone="${place.phone}">📞</button>
+                        <button class="action-btn primary map-btn" data-url="${place.mapUrl}">📍 Mapa</button>
+                    </div>
+                </article>`;
+        }
+        
+        function toggleVisited(placeId) {
+            visitedPlaces = visitedPlaces.includes(placeId) ? visitedPlaces.filter(id => id !== placeId) : [...visitedPlaces, placeId];
+            localStorage.setItem('kidsspot_visited', JSON.stringify(visitedPlaces));
+            updateStats(); renderPlaces();
+        }
+        
+        function openNoteModal(placeId) {
+            currentNotePlace = placeId;
+            const place = places.find(p => p.id === placeId);
+            modalPlaceName.textContent = place.name;
+            noteTextarea.value = placeNotes[placeId] || '';
+            noteModal.classList.add('active');
+            noteTextarea.focus();
+        }
+        
+        function closeNoteModal() { noteModal.classList.remove('active'); currentNotePlace = null; }
+        
+        function saveNote() {
+            if (currentNotePlace && noteTextarea.value.trim()) {
+                placeNotes[currentNotePlace] = noteTextarea.value.trim();
+                localStorage.setItem('kidsspot_notes', JSON.stringify(placeNotes));
+            }
+            closeNoteModal(); renderPlaces();
+        }
+        
+        function deleteNote(placeId) {
+            delete placeNotes[placeId];
+            localStorage.setItem('kidsspot_notes', JSON.stringify(placeNotes));
+            renderPlaces();
+        }
+        
+        function updateStats() {
+            document.getElementById('total-places').textContent = places.length;
+            document.getElementById('visited-count').textContent = visitedPlaces.length;
+            document.getElementById('to-visit').textContent = places.length - visitedPlaces.length;
+        }
+        
+        filterBtns.forEach(btn => btn.addEventListener('click', () => {
+            // Handle location button separately
+            if (btn.id === 'location-btn') {
+                if (sortByDistance) {
+                    // Turn off location sorting
+                    sortByDistance = false;
+                    btn.classList.remove('active');
+                    renderPlaces();
+                } else {
+                    requestLocation();
+                }
+                return;
+            }
+            
+            // Regular filter buttons - turn off location sorting
+            sortByDistance = false;
+            locationBtn.classList.remove('active');
+            
+            filterBtns.forEach(b => {
+                if (b.id !== 'location-btn') b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            if (currentFilter === 'local') {
+                districtSelect.value = 'all';
+                currentDistrict = 'all';
+            }
+            renderPlaces();
+        }));
+        
+        districtSelect.addEventListener('change', () => {
+            currentDistrict = districtSelect.value;
+            // Reset location sorting when district filter is used
+            if (currentDistrict !== 'all') {
+                sortByDistance = false;
+                locationBtn.classList.remove('active');
+            }
+            renderPlaces();
+        });
+        
+        document.getElementById('modal-close').addEventListener('click', closeNoteModal);
+        document.getElementById('modal-cancel').addEventListener('click', closeNoteModal);
+        document.getElementById('modal-save').addEventListener('click', saveNote);
+        noteModal.addEventListener('click', e => { if (e.target === noteModal) closeNoteModal(); });
+        
+        updateStats(); renderPlaces();
+    </script>
+</body>
+</html>
