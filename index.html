@@ -188,67 +188,12 @@
     </div>
     
     <script>
-        const places = [
-            // PRAGA POŁUDNIE - Sale zabaw
-            { id: 1, name: "Sala Zabaw Mango", address: "ul. Mińska 69", type: "playroom", district: "Praga Południe", phone: "605 494 224", hours: "Wt-Śr 15-19, Czw-Pt 10-19, Sb-Nd 10-16", mapUrl: "https://maps.google.com/?q=Sala+Zabaw+Mango+Mińska+69+Warszawa", lat: 52.2485, lng: 21.0567 },
-            { id: 2, name: "Tęczowa Sowa", address: "ul. Podskarbińska 34", type: "playroom", district: "Grochów", phone: "22 253 15 35", hours: "Pn-Pt 9-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Tęczowa+Sowa+Podskarbińska+Warszawa", lat: 52.2398, lng: 21.0821 },
-            // GOCŁAW
-            { id: 5, name: "Jungle Academy", address: "ul. Wał Miedzeszyński 646", type: "playroom", district: "Gocław", phone: "22 428 18 28", hours: "Codziennie 10:00-20:00", mapUrl: "https://maps.google.com/?q=Jungle+Academy+Wał+Miedzeszyński+Warszawa", lat: 52.2312, lng: 21.0891 },
-            { id: 6, name: "Lider Plac Zabaw", address: "CH Promenada, ul. Ostrobramska 75C", type: "playroom", district: "Gocław", phone: "22 611 70 89", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Lider+Plac+Zabaw+Promenada+Warszawa", lat: 52.2389, lng: 21.0845 },
-            { id: 7, name: "Fiku-Miku", address: "CH Tesco, ul. Fieldorfa 41", type: "playroom", district: "Gocław", phone: "22 813 92 31", hours: "Codziennie 11:00-20:00", mapUrl: "https://maps.google.com/?q=Fiku+Miku+Fieldorfa+Warszawa", lat: 52.2334, lng: 21.0798 },
-            // SASKA KĘPA
-            { id: 8, name: "FikuMiku Cafe", address: "ul. Zwycięzców 32", type: "playroom", district: "Saska Kępa", phone: "692 448 112", hours: "Pn-Pt 10-20, Sb-Nd 11-20", mapUrl: "https://maps.google.com/?q=FikuMiku+Cafe+Zwycięzców+Warszawa", lat: 52.2401, lng: 21.0534 },
-            // PRAGA POŁUDNIE - SOHO
-            { id: 20, name: "Oho Bawiarnia", address: "ul. Żupnicza 16", type: "playroom", district: "Praga Południe", phone: "570 767 343", hours: "Codziennie 10:00-19:00", mapUrl: "https://maps.google.com/?q=Oho+Bawiarnia+Żupnicza+Warszawa", lat: 52.2478, lng: 21.0612 },
-            // PRAGA POŁUDNIE - KAMIONEK
-            { id: 22, name: "Qulki Sala Zabaw", address: "ul. Majdańska 3 lok. 6", type: "playroom", district: "Praga Południe", phone: "", hours: "Sprawdź na miejscu", mapUrl: "https://maps.google.com/?q=Qulki+Sala+Zabaw+Majdańska+3+Warszawa", lat: 52.2445, lng: 21.0534 },
-            // PRAGA PÓŁNOC
-            { id: 21, name: "Hultajka", address: "ul. Floriańska 6", type: "playroom", district: "Praga Północ", phone: "606 766 877", hours: "Pn-Sb 10-20, Nd 10-19", mapUrl: "https://maps.google.com/?q=Hultajka+Floriańska+Warszawa", lat: 52.2517, lng: 21.0344 },
-            // WAWER
-            { id: 9, name: "Fikołki Ferio Wawer", address: "Ferio Wawer, ul. Szpotańskiego 4", type: "playroom", district: "Wawer", phone: "22 100 41 00", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Fikołki+Ferio+Wawer+Warszawa", lat: 52.2156, lng: 21.1523 },
-            // ZĄBKI
-            { id: 10, name: "Nad Przystanią", address: "ul. Szpitalna 57", type: "playroom", district: "Ząbki", phone: "510 300 400", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Nad+Przystanią+Szpitalna+Ząbki", lat: 52.2912, lng: 21.1134 },
-            { id: 11, name: "Hopsa", address: "ul. Powstańców 35", type: "playroom", district: "Ząbki", phone: "507 471 166", hours: "Pn-Pt 14-20, Sb-Nd 10-20", mapUrl: "https://maps.google.com/?q=Hopsa+Ząbki", lat: 52.2867, lng: 21.1089 },
-            // WESOŁA
-            { id: 12, name: "Eduflow Kids", address: "ul. Główna 47, Sulejówek", type: "playroom", district: "Wesoła", phone: "510 200 408", hours: "Pn-Pt 15-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Eduflow+Kids+Sulejówek", lat: 52.2534, lng: 21.2145 },
-            // TARGÓWEK
-            { id: 13, name: "JU-HU", address: "ul. Głębocka 3 lok. 19", type: "playroom", district: "Targówek", phone: "536 300 320", hours: "Wg Google - sprawdź", mapUrl: "https://maps.google.com/?q=JUHU+Sala+Zabaw+Głębocka+Warszawa", lat: 52.2912, lng: 21.0423 },
-            // BIAŁOŁĘKA  
-            { id: 14, name: "Ekofrajda", address: "ul. Porajów 2", type: "playroom", district: "Białołęka", phone: "22 811 22 33", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Ekofrajda+Porajów+Warszawa", lat: 52.3234, lng: 20.9823 },
-            // INNE DZIELNICE - Sale zabaw
-            { id: 15, name: "Smart Kids Planet", address: "Fabryka Norblina, ul. Żelazna 51/53", type: "playroom", district: "Wola", phone: "727 770 880", hours: "Codziennie 9:00-20:00", mapUrl: "https://maps.google.com/?q=Smart+Kids+Planet+Fabryka+Norblina+Warszawa", lat: 52.2312, lng: 20.9934 },
-            { id: 16, name: "LuMo", address: "ul. Postępu 4", type: "playroom", district: "Mokotów", phone: "572 922 211", hours: "Codziennie 9:00-20:00", mapUrl: "https://maps.google.com/?q=LuMo+Plac+Zabaw+Postępu+Warszawa", lat: 52.1823, lng: 20.9978 },
-            { id: 23, name: "Sensorysie", address: "ul. Różana 8", type: "playroom", district: "Mokotów", phone: "570 007 368", hours: "Codziennie 9:00-20:00", mapUrl: "https://maps.google.com/?q=Sensorysie+Różana+Warszawa", lat: 52.2089, lng: 21.0234 },
-            { id: 17, name: "Inca Play", address: "Blue City, Al. Jerozolimskie 179", type: "playroom", district: "Ochota", phone: "22 310 30 40", hours: "Pn-Sb 10-21, Nd 10-20", mapUrl: "https://maps.google.com/?q=Inca+Play+Blue+City+Warszawa", lat: 52.2123, lng: 20.9534 },
-            { id: 18, name: "Kółko i Krzyżyk", address: "ul. Rydygiera 17", type: "playroom", district: "Żoliborz", phone: "22 839 00 11", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Kółko+Krzyżyk+Rydygiera+Warszawa", lat: 52.2712, lng: 20.9823 },
-            { id: 19, name: "Anse Kabanse", address: "ul. Sowińskiego 25", type: "playroom", district: "Wola", phone: "22 632 44 55", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Anse+Kabanse+Sowińskiego+Warszawa", lat: 52.2389, lng: 20.9756 },
-            
-            // RESTAURACJE - Praga Południe / Gocław
-            { id: 30, name: "Papito Cocina Mexicana", address: "ul. gen. Skalskiego 1", type: "restaurant", district: "Gocław", phone: "733 408 385", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=Papito+Cocina+Mexicana+Skalskiego+Warszawa", lat: 52.2356, lng: 21.0712 },
-            { id: 31, name: "Hopsaska", address: "ul. Bora-Komorowskiego 56A", type: "restaurant", district: "Praga Południe", phone: "22 271 33 55", hours: "Pn-Pt 10-19, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Hopsaska+Bora+Komorowskiego+Warszawa", lat: 52.2267, lng: 21.0623 },
-            { id: 32, name: "Zdrowe Ciacho", address: "ul. Nowaka-Jeziorańskiego 44", type: "restaurant", district: "Gocław", phone: "512 222 333", hours: "Pn-Pt 11-20, Sb-Nd 10-18", mapUrl: "https://maps.google.com/?q=Zdrowe+Ciacho+Gocław+Warszawa", lat: 52.2378, lng: 21.0867 },
-            // SASKA KĘPA
-            { id: 33, name: "Ruza Roza", address: "ul. Walecznych 66", type: "restaurant", district: "Saska Kępa", phone: "22 100 06 06", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=Ruza+Roza+Walecznych+Warszawa", lat: 52.2412, lng: 21.0489 },
-            { id: 34, name: "Bistro Bibuła", address: "ul. Zwycięzców 47", type: "restaurant", district: "Saska Kępa", phone: "22 617 13 38", hours: "Pn-Pt 9-21, Sb-Nd 10-21", mapUrl: "https://maps.google.com/?q=Bistro+Bibuła+Zwycięzców+Warszawa", lat: 52.2398, lng: 21.0523 },
-            { id: 35, name: "Bella Napoli", address: "ul. Francuska 18", type: "restaurant", district: "Saska Kępa", phone: "22 617 35 00", hours: "Codziennie 12:00-23:00", mapUrl: "https://maps.google.com/?q=Bella+Napoli+Francuska+Warszawa", lat: 52.2423, lng: 21.0512 },
-            { id: 36, name: "Niebieskie Migdały", address: "ul. Francuska 35", type: "restaurant", district: "Saska Kępa", phone: "22 617 63 15", hours: "Codziennie 9:00-21:00", mapUrl: "https://maps.google.com/?q=Niebieskie+Migdały+Francuska+Warszawa", lat: 52.2434, lng: 21.0534 },
-            { id: 37, name: "Bułkę przez Bibułkę", address: "ul. Floriańska 3", type: "restaurant", district: "Saska Kępa", phone: "22 619 60 71", hours: "Pn-Pt 8-17, Sb 9-15", mapUrl: "https://maps.google.com/?q=Bułkę+przez+Bibułkę+Floriańska+Warszawa", lat: 52.2445, lng: 21.0545 },
-            // WAWER
-            { id: 38, name: "Kura Domowa", address: "ul. Zwoleńska 81", type: "restaurant", district: "Wawer", phone: "22 611 00 04", hours: "Codziennie 10:00-22:00", mapUrl: "https://maps.google.com/?q=Kura+Domowa+Zwoleńska+Warszawa", lat: 52.2078, lng: 21.1234 },
-            // PRAGA PÓŁNOC
-            { id: 39, name: "Młyn na Okrzei", address: "ul. Okrzei 23", type: "restaurant", district: "Praga Północ", phone: "22 619 20 30", hours: "Pn-Nd 12:00-22:00", mapUrl: "https://maps.google.com/?q=Młyn+Okrzei+Warszawa", lat: 52.2534, lng: 21.0412 },
-            // TARGÓWEK
-            { id: 40, name: "U Babci", address: "ul. Codzienna 8", type: "restaurant", district: "Targówek", phone: "22 678 90 12", hours: "Pn-Nd 11:00-21:00", mapUrl: "https://maps.google.com/?q=U+Babci+Codzienna+Warszawa", lat: 52.2823, lng: 21.0534 },
-            // INNE DZIELNICE
-            { id: 41, name: "Der Elefant", address: "Plac Bankowy 1", type: "restaurant", district: "Śródmieście", phone: "22 827 73 30", hours: "Codziennie 12:00-23:00", mapUrl: "https://maps.google.com/?q=Der+Elefant+Plac+Bankowy+Warszawa", lat: 52.2445, lng: 21.0023 },
-            { id: 42, name: "Otto Pompieri", address: "Plac Bankowy 1", type: "restaurant", district: "Śródmieście", phone: "22 370 24 20", hours: "Nd-Czw 12-22, Pt-Sb 12-23", mapUrl: "https://maps.google.com/?q=Otto+Pompieri+Plac+Bankowy+Warszawa", lat: 52.2445, lng: 21.0023 },
-            { id: 43, name: "Kafejka Sto Pociech", address: "ul. Freta 20/24A", type: "restaurant", district: "Śródmieście", phone: "22 635 54 20", hours: "Wt-Nd 11:00-18:00", mapUrl: "https://maps.google.com/?q=Kafejka+Sto+Pociech+Freta+Warszawa", lat: 52.2512, lng: 21.0089 },
-            { id: 44, name: "Nabo Cafe", address: "ul. Zakręt 8", type: "restaurant", district: "Mokotów", phone: "22 842 02 56", hours: "Codziennie 9:00-21:00", mapUrl: "https://maps.google.com/?q=Nabo+Cafe+Zakręt+Warszawa", lat: 52.1934, lng: 21.0423 },
-            { id: 45, name: "Polana", address: "ul. Klimczaka 5 lok. 81", type: "restaurant", district: "Wilanów", phone: "22 402 20 24", hours: "Pn-Pt 9-20, Sb-Nd 10-20", mapUrl: "https://maps.google.com/?q=Polana+Klimczaka+Wilanów+Warszawa", lat: 52.1645, lng: 21.0534 },
-            { id: 46, name: "Kuźnia Kulturalna", address: "ul. Kostki Potockiego 24", type: "restaurant", district: "Wilanów", phone: "22 885 66 77", hours: "Pn-Nd 10:00-21:00", mapUrl: "https://maps.google.com/?q=Kuźnia+Kulturalna+Wilanów+Warszawa", lat: 52.1589, lng: 21.0789 },
-            { id: 47, name: "Słowo Daję", address: "Pasaż Ursynowski 9", type: "restaurant", district: "Ursynów", phone: "22 123 45 67", hours: "Pn-Sb 10-20, Nd 11-18", mapUrl: "https://maps.google.com/?q=Słowo+Daję+Ursynów+Warszawa", lat: 52.1534, lng: 21.0312 },
-            { id: 48, name: "American House", address: "ul. Baletowa 3", type: "restaurant", district: "Ursynów", phone: "22 648 88 88", hours: "Codziennie 12:00-22:00", mapUrl: "https://maps.google.com/?q=American+House+Baletowa+Warszawa", lat: 52.1478, lng: 21.0245 },
-        ];
+        // Google Sheets API endpoint
+        const SHEETS_API = 'https://script.google.com/macros/s/AKfycbxvYEHJMbZ_IWSVJd3-eVV_CRyEElEU9n2oVVhE97Q2pkV0roBgbCTk4OVmqK-qqlb6/exec';
+        
+        // Data will be loaded from Google Sheets
+        let places = [];
+        let dataLoaded = false;
         
         let visitedPlaces = JSON.parse(localStorage.getItem('kidsspot_visited') || '[]');
         let placeNotes = JSON.parse(localStorage.getItem('kidsspot_notes') || '{}');
@@ -483,7 +428,43 @@
         document.getElementById('modal-save').addEventListener('click', saveNote);
         noteModal.addEventListener('click', e => { if (e.target === noteModal) closeNoteModal(); });
         
-        updateStats(); renderPlaces();
+        // Load data from Google Sheets
+        async function loadPlaces() {
+            container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--brown-soft);"><p>⏳ Ładowanie miejsc...</p></div>';
+            
+            try {
+                const response = await fetch(SHEETS_API);
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    places = data;
+                    dataLoaded = true;
+                    // Cache in localStorage for offline fallback
+                    localStorage.setItem('kidsspot_places_cache', JSON.stringify(data));
+                    localStorage.setItem('kidsspot_cache_time', Date.now().toString());
+                }
+            } catch (error) {
+                console.error('Failed to load from Sheets:', error);
+                // Try to use cached data
+                const cached = localStorage.getItem('kidsspot_places_cache');
+                if (cached) {
+                    places = JSON.parse(cached);
+                    dataLoaded = true;
+                    console.log('Using cached data');
+                } else {
+                    container.innerHTML = '<div style="text-align:center;padding:3rem;color:#c44;"><p>❌ Nie udało się załadować danych</p><p style="font-size:0.85rem;margin-top:0.5rem;">Sprawdź połączenie z internetem</p></div>';
+                    return;
+                }
+            }
+            
+            updateStats();
+            renderPlaces();
+        }
+        
+        // Initialize app
+        loadPlaces();
     </script>
 </body>
 </html>
